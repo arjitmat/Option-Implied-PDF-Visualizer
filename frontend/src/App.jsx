@@ -8,7 +8,12 @@ import {
   ChevronDown, ChevronUp, AlertTriangle, CheckCircle, BarChart2
 } from 'lucide-react';
 
-const API_URL = 'http://localhost:8001';
+// Use environment variable in production, localhost in development
+const API_URL = import.meta.env.VITE_API_URL || (
+  window.location.hostname === 'localhost'
+    ? 'http://localhost:8001'
+    : window.location.origin
+);
 
 // --- 1. PARTICLE BACKGROUND & MOUSE TRACKER ---
 const ParticleBackground = () => {

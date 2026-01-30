@@ -9,12 +9,15 @@ Provides REST API endpoints for:
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import sys
 from pathlib import Path
 import numpy as np
 from datetime import datetime, timedelta
+import os
 
 # Add parent directory to path to import existing modules
 backend_root = Path(__file__).parent.parent.parent
@@ -406,6 +409,31 @@ async def shutdown_event():
     print("\n" + "=" * 80)
     print("🛑 Option-Implied PDF Visualizer API Shutting Down...")
     print("=" * 80)
+
+# =============================================================================
+# SERVE REACT FRONTEND (for Docker/Production deployment)
+# =============================================================================
+
+# Check if static files exist (built React app)
+static_dir = Path(__file__).parent.parent / "static"
+if static_dir.exists():
+    # Mount static assets (JS, CSS, images)
+    app.mount("/assets", StaticFiles(directory=str(static_dir / "assets")), name="assets")
+
+    # Serve index.html for all non-API routes (SPA routing)
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        """Serve React frontend for all non-API routes"""
+        # Don't intercept API routes
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="API endpoint not found")
+
+        # Serve index.html for SPA routing
+        index_file = static_dir / "index.html"
+        if index_file.exists():
+            return FileResponse(index_file)
+        else:
+            raise HTTPException(status_code=404, detail="Frontend not found")
 
 if __name__ == "__main__":
     import uvicorn
