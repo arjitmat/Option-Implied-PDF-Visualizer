@@ -70,9 +70,9 @@ class HealthResponse(BaseModel):
 # ENDPOINTS
 # =============================================================================
 
-@app.get("/", response_model=HealthResponse)
+@app.get("/api", response_model=HealthResponse)
 async def root():
-    """Root endpoint - API health check"""
+    """API root endpoint - health check"""
     return {
         "status": "healthy",
         "version": "1.0.0",
@@ -414,26 +414,59 @@ async def shutdown_event():
 # SERVE REACT FRONTEND (for Docker/Production deployment)
 # =============================================================================
 
+# =============================================================================
+# SERVE REACT FRONTEND (for Docker/Production deployment)
+# =============================================================================
+
 # Check if static files exist (built React app)
 static_dir = Path(__file__).parent.parent / "static"
 if static_dir.exists():
+    print(f"📦 Static files found at: {static_dir}")
+    print(f"📂 Contents: {list(static_dir.iterdir())}")
+
     # Mount static assets (JS, CSS, images)
     app.mount("/assets", StaticFiles(directory=str(static_dir / "assets")), name="assets")
 
-    # Serve index.html for all non-API routes (SPA routing)
+    # Serve index.html for root and all non-API routes
+    @app.get("/")
+    async def serve_root():
+        """Serve React app at root"""
+        index_file = static_dir / "index.html"
+        if index_file.exists():
+            return FileResponse(index_file)
+        else:
+            return {"error": "Frontend build not found", "path": str(index_file)}
+
     @app.get("/{full_path:path}")
     async def serve_frontend(full_path: str):
-        """Serve React frontend for all non-API routes"""
+        """Serve React frontend for all non-API routes (SPA routing)"""
         # Don't intercept API routes
-        if full_path.startswith("api/"):
+        if full_path.startswith("api"):
             raise HTTPException(status_code=404, detail="API endpoint not found")
 
-        # Serve index.html for SPA routing
+        # Check if requesting a static file
+        file_path = static_dir / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+
+        # Otherwise serve index.html for SPA routing
         index_file = static_dir / "index.html"
         if index_file.exists():
             return FileResponse(index_file)
         else:
             raise HTTPException(status_code=404, detail="Frontend not found")
+else:
+    print(f"⚠️  No static files found at: {static_dir}")
+    print(f"⚠️  React frontend will not be served!")
+
+    @app.get("/")
+    async def no_frontend():
+        """Fallback when no frontend is built"""
+        return {
+            "message": "React frontend not built",
+            "api_docs": "/docs",
+            "health": "/api/health"
+        }
 
 if __name__ == "__main__":
     import uvicorn
