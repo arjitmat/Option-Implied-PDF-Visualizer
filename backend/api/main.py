@@ -414,10 +414,6 @@ async def shutdown_event():
 # SERVE REACT FRONTEND (for Docker/Production deployment)
 # =============================================================================
 
-# =============================================================================
-# SERVE REACT FRONTEND (for Docker/Production deployment)
-# =============================================================================
-
 # Check if static files exist (built React app)
 static_dir = Path(__file__).parent.parent / "static"
 if static_dir.exists():
