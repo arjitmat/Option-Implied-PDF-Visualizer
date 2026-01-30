@@ -121,7 +121,11 @@ async def analyze_options(request: AnalysisRequest):
         # Initialize data manager
         data_manager = DataManager()
 
-        # Get all available expirations for this ticker
+        # Try increasingly wider date ranges to get sufficient data
+        options_df = None
+        actual_dte = request.days_to_expiry
+
+        # Strategy 1: Try exact date matching first
         try:
             all_expirations = data_manager.get_expirations(ticker=request.ticker)
 
@@ -138,37 +142,53 @@ async def analyze_options(request: AnalysisRequest):
                     min_diff = diff
                     closest_exp = exp_str
 
-            if closest_exp is None:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"No option expirations available for {request.ticker}"
+            if closest_exp:
+                # Calculate actual DTE for the closest expiration
+                closest_date = datetime.strptime(closest_exp, '%Y-%m-%d')
+                actual_dte = (closest_date - datetime.now()).days
+
+                # Fetch options for the closest expiration (with small window)
+                options_df = data_manager.get_options(
+                    ticker=request.ticker,
+                    min_expiry_days=max(1, actual_dte - 2),
+                    max_expiry_days=actual_dte + 2
                 )
-
-            # Calculate actual DTE for the closest expiration
-            closest_date = datetime.strptime(closest_exp, '%Y-%m-%d')
-            actual_dte = (closest_date - datetime.now()).days
-
-            # Fetch options for the closest expiration (with small window for multiple chains)
-            options_df = data_manager.get_options(
-                ticker=request.ticker,
-                min_expiry_days=max(1, actual_dte - 2),
-                max_expiry_days=actual_dte + 2
-            )
-
         except Exception as exp_error:
-            # Fallback to original wide range approach
-            print(f"Expiration matching failed: {exp_error}. Trying wide range...")
-            options_df = data_manager.get_options(
-                ticker=request.ticker,
-                min_expiry_days=max(1, request.days_to_expiry - 15),
-                max_expiry_days=request.days_to_expiry + 15
-            )
+            print(f"Exact matching failed: {exp_error}")
 
+        # Strategy 2: If not enough data, try wider range
+        if options_df is None or len(options_df) < 20:
+            print(f"Trying wider date range for {request.ticker}...")
+            try:
+                options_df = data_manager.get_options(
+                    ticker=request.ticker,
+                    min_expiry_days=max(1, request.days_to_expiry - 15),
+                    max_expiry_days=request.days_to_expiry + 15
+                )
+            except Exception as wide_error:
+                print(f"Wide range failed: {wide_error}")
+
+        # Strategy 3: If still not enough, try very wide range
+        if options_df is None or len(options_df) < 20:
+            print(f"Trying very wide date range for {request.ticker}...")
+            try:
+                options_df = data_manager.get_options(
+                    ticker=request.ticker,
+                    min_expiry_days=7,
+                    max_expiry_days=90
+                )
+            except Exception as final_error:
+                print(f"Final attempt failed: {final_error}")
+
+        # Final check: Do we have any data?
         if options_df is None or options_df.empty:
             raise HTTPException(
                 status_code=404,
-                detail=f"No option data found for {request.ticker}"
+                detail=f"No option data found for {request.ticker}. The ticker may not have active options, or data providers may be unavailable."
             )
+
+        # Log how much data we got
+        print(f"Fetched {len(options_df)} total option contracts for {request.ticker}")
 
         # Get risk-free rate
         risk_free_rate = data_manager.get_risk_free_rate()
@@ -221,14 +241,26 @@ async def analyze_options(request: AnalysisRequest):
         pdf_calculator = BreedenlitzenbergPDF()
         interpolation_method = 'sabr' if request.use_sabr else 'spline'
 
-        pdf_strikes, pdf_values = pdf_calculator.calculate_from_options(
-            options_df=pdf_input,
-            spot_price=spot_price,
-            risk_free_rate=risk_free_rate,
-            time_to_expiry=T,
-            option_type='call',
-            interpolation_method=interpolation_method
-        )
+        print(f"Calculating PDF with {len(pdf_input)} call options (strikes: {pdf_input['strike'].min():.2f} - {pdf_input['strike'].max():.2f})")
+
+        try:
+            pdf_strikes, pdf_values = pdf_calculator.calculate_from_options(
+                options_df=pdf_input,
+                spot_price=spot_price,
+                risk_free_rate=risk_free_rate,
+                time_to_expiry=T,
+                option_type='call',
+                interpolation_method=interpolation_method
+            )
+        except ValueError as ve:
+            # Better error message for insufficient strikes
+            error_msg = str(ve)
+            if "Need at least" in error_msg:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Insufficient option data for {request.ticker}. {error_msg}. Try selecting a different ticker or wait a few moments for data to refresh."
+                )
+            raise HTTPException(status_code=400, detail=error_msg)
 
         # Calculate statistics
         stats_calc = PDFStatistics(

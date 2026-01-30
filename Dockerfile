@@ -46,7 +46,10 @@ COPY src/ ./src/
 COPY config/ ./config/
 COPY backend/ ./backend/
 COPY app/ ./app/
-COPY .env.example .env
+
+# For environment variables, HuggingFace provides them via Secrets
+# Create empty .env file - will be populated by HF secrets at runtime
+RUN touch .env
 
 # Note: All __init__.py files are already in the source code
 

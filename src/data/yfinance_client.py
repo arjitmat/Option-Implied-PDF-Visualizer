@@ -226,13 +226,20 @@ class YFinanceClient:
             Cleaned DataFrame
         """
         # Remove rows with missing critical data
-        df = df.dropna(subset=['strike', 'lastPrice', 'impliedVolatility'])
+        df = df.dropna(subset=['strike', 'lastPrice'])
 
         # Remove zero or negative prices
         df = df[df['lastPrice'] > 0]
 
-        # Remove zero or negative IV
-        df = df[df['impliedVolatility'] > 0]
+        # For IV, be more lenient - fill with reasonable defaults if missing
+        if 'impliedVolatility' not in df.columns:
+            df['impliedVolatility'] = 0.20  # Default 20% IV
+        else:
+            # Fill missing IVs with mean of available IVs
+            df['impliedVolatility'] = df['impliedVolatility'].fillna(df['impliedVolatility'].mean())
+            # Remove rows with still invalid IVs
+            df = df[df['impliedVolatility'] > 0]
+            df = df[df['impliedVolatility'] < 5.0]  # Remove unrealistic IVs > 500%
 
         # Calculate mid price from bid-ask if available
         if 'bid' in df.columns and 'ask' in df.columns:

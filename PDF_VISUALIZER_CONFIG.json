@@ -1,0 +1,267 @@
+{
+  "project_meta": {
+    "name": "pdf-visualizer",
+    "display_name": "Option-Implied PDF Visualizer",
+    "version": "1.0.0",
+    "created": "2025-11-27",
+    "author": "Arjit",
+    "description": "SPX option-implied probability density visualizer with AI interpretation"
+  },
+
+  "tech_stack": {
+    "language": "python",
+    "version": "3.11+",
+    "framework": "streamlit",
+    "visualization": "plotly",
+    "ai": "ollama/qwen3:7b",
+    "database": "sqlite",
+    "hosting": "huggingface-spaces"
+  },
+
+  "api_requirements": {
+    "openbb": {
+      "required": true,
+      "purpose": "SPY option chain data (primary)",
+      "auth_type": "none",
+      "env_vars": [],
+      "install": "pip install openbb",
+      "status": "needs_setup"
+    },
+    "yfinance": {
+      "required": true,
+      "purpose": "SPY option chain data (backup)",
+      "auth_type": "none",
+      "env_vars": [],
+      "install": "pip install yfinance",
+      "status": "needs_setup"
+    },
+    "fred": {
+      "required": true,
+      "purpose": "Risk-free interest rate",
+      "auth_type": "api_key",
+      "env_vars": ["FRED_API_KEY"],
+      "signup_url": "https://fred.stlouisfed.org/docs/api/api_key.html",
+      "status": "needs_setup"
+    },
+    "ollama": {
+      "required": true,
+      "purpose": "Local LLM for AI interpretation",
+      "auth_type": "none",
+      "install_url": "https://ollama.ai",
+      "model": "qwen3:7b",
+      "status": "needs_setup"
+    },
+    "huggingface": {
+      "required": false,
+      "purpose": "Deployment hosting",
+      "auth_type": "token",
+      "env_vars": ["HF_TOKEN"],
+      "signup_url": "https://huggingface.co",
+      "status": "needs_setup"
+    }
+  },
+
+  "project_structure": {
+    "root": "pdf-visualizer",
+    "directories": {
+      ".claude": "Claude Code memory and tracking files",
+      "docs": "All documentation",
+      "src": "Source code",
+      "src/data": "Data fetching and caching",
+      "src/core": "Core math (SABR, Breeden-Litzenberger)",
+      "src/ai": "AI interpretation",
+      "src/visualization": "Charts and plots",
+      "src/database": "SQLite models and queries",
+      "app": "Streamlit application",
+      "app/pages": "Multi-page app pages",
+      "app/components": "Reusable UI components",
+      "tests": "Unit and integration tests",
+      "config": "Configuration files"
+    },
+    "key_files": {
+      "entry_point": "app/streamlit_app.py",
+      "core_algorithm": "src/core/breeden_litz.py",
+      "ai_interpreter": "src/ai/interpreter.py",
+      "main_visualization": "src/visualization/surface_3d.py",
+      "data_client_primary": "src/data/openbb_client.py",
+      "data_client_backup": "src/data/yfinance_client.py"
+    }
+  },
+
+  "development_phases": [
+    {
+      "phase": 1,
+      "name": "Foundation",
+      "duration_days": 2,
+      "status": "not_started",
+      "progress_pct": 0,
+      "tasks": [
+        {"id": "1.1", "task": "Initialize project structure", "done": false},
+        {"id": "1.2", "task": "Create requirements.txt", "done": false},
+        {"id": "1.3", "task": "Set up .env with credentials", "done": false},
+        {"id": "1.4", "task": "Build OpenBB client wrapper", "done": false},
+        {"id": "1.5", "task": "Build yfinance client wrapper (backup)", "done": false},
+        {"id": "1.6", "task": "Build FRED client for risk-free rate", "done": false},
+        {"id": "1.7", "task": "Test data retrieval for SPY options", "done": false},
+        {"id": "1.8", "task": "Create data caching layer", "done": false},
+        {"id": "1.9", "task": "Write tests for data layer", "done": false}
+      ],
+      "validation": "Fetch SPY option chain with 50+ strikes"
+    },
+    {
+      "phase": 2,
+      "name": "Core Math",
+      "duration_days": 2,
+      "status": "not_started",
+      "progress_pct": 0,
+      "tasks": [
+        {"id": "2.1", "task": "Implement SABR calibration", "done": false},
+        {"id": "2.2", "task": "Build IV smile interpolation", "done": false},
+        {"id": "2.3", "task": "Implement Breeden-Litzenberger formula", "done": false},
+        {"id": "2.4", "task": "Add PDF normalization", "done": false},
+        {"id": "2.5", "task": "Calculate PDF statistics", "done": false},
+        {"id": "2.6", "task": "Calculate cumulative probabilities", "done": false},
+        {"id": "2.7", "task": "Handle edge cases", "done": false},
+        {"id": "2.8", "task": "Write comprehensive tests", "done": false}
+      ],
+      "validation": "PDF integrates to 1.0 ± 0.01"
+    },
+    {
+      "phase": 3,
+      "name": "Visualization",
+      "duration_days": 2,
+      "status": "not_started",
+      "progress_pct": 0,
+      "tasks": [
+        {"id": "3.1", "task": "Create 2D PDF plot", "done": false},
+        {"id": "3.2", "task": "Create PDF comparison plot", "done": false},
+        {"id": "3.3", "task": "Build 3D surface", "done": false},
+        {"id": "3.4", "task": "Add interactivity", "done": false},
+        {"id": "3.5", "task": "Create probability table", "done": false},
+        {"id": "3.6", "task": "Apply dark theme", "done": false},
+        {"id": "3.7", "task": "Optimize rendering", "done": false},
+        {"id": "3.8", "task": "Test responsiveness", "done": false}
+      ],
+      "validation": "3D surface renders and rotates smoothly"
+    },
+    {
+      "phase": 4,
+      "name": "AI Interpretation",
+      "duration_days": 2,
+      "status": "not_started",
+      "progress_pct": 0,
+      "tasks": [
+        {"id": "4.1", "task": "Set up Ollama connection", "done": false},
+        {"id": "4.2", "task": "Create prompt templates", "done": false},
+        {"id": "4.3", "task": "Build interpretation pipeline", "done": false},
+        {"id": "4.4", "task": "Add historical pattern matching", "done": false},
+        {"id": "4.5", "task": "Generate historical comparisons", "done": false},
+        {"id": "4.6", "task": "Create prediction tracking", "done": false},
+        {"id": "4.7", "task": "Store interpretations", "done": false},
+        {"id": "4.8", "task": "Test interpretation quality", "done": false}
+      ],
+      "validation": "AI generates coherent 200+ char analysis"
+    },
+    {
+      "phase": 5,
+      "name": "Database & History",
+      "duration_days": 2,
+      "status": "not_started",
+      "progress_pct": 0,
+      "tasks": [
+        {"id": "5.1", "task": "Design SQLite schema", "done": false},
+        {"id": "5.2", "task": "Create SQLAlchemy models", "done": false},
+        {"id": "5.3", "task": "Build PDF archival system", "done": false},
+        {"id": "5.4", "task": "Implement pattern matching", "done": false},
+        {"id": "5.5", "task": "Set up ChromaDB (optional)", "done": false},
+        {"id": "5.6", "task": "Create prediction tracking table", "done": false},
+        {"id": "5.7", "task": "Build accuracy scoring", "done": false},
+        {"id": "5.8", "task": "Write database tests", "done": false}
+      ],
+      "validation": "Store and retrieve PDF snapshot successfully"
+    },
+    {
+      "phase": 6,
+      "name": "Streamlit App",
+      "duration_days": 3,
+      "status": "not_started",
+      "progress_pct": 0,
+      "tasks": [
+        {"id": "6.1", "task": "Create main app structure", "done": false},
+        {"id": "6.2", "task": "Build sidebar controls", "done": false},
+        {"id": "6.3", "task": "Implement Live Analysis page", "done": false},
+        {"id": "6.4", "task": "Implement Historical page", "done": false},
+        {"id": "6.5", "task": "Implement Predictions page", "done": false},
+        {"id": "6.6", "task": "Implement About page", "done": false},
+        {"id": "6.7", "task": "Add loading states", "done": false},
+        {"id": "6.8", "task": "Apply consistent styling", "done": false},
+        {"id": "6.9", "task": "Test all user flows", "done": false},
+        {"id": "6.10", "task": "Optimize performance", "done": false}
+      ],
+      "validation": "Full app flow works end-to-end"
+    },
+    {
+      "phase": 7,
+      "name": "Testing & Deployment",
+      "duration_days": 2,
+      "status": "not_started",
+      "progress_pct": 0,
+      "tasks": [
+        {"id": "7.1", "task": "Run all unit tests", "done": false},
+        {"id": "7.2", "task": "Run integration tests", "done": false},
+        {"id": "7.3", "task": "Performance testing", "done": false},
+        {"id": "7.4", "task": "Create Dockerfile", "done": false},
+        {"id": "7.5", "task": "Test Docker build", "done": false},
+        {"id": "7.6", "task": "Create HuggingFace Space", "done": false},
+        {"id": "7.7", "task": "Configure HF secrets", "done": false},
+        {"id": "7.8", "task": "Deploy and test live", "done": false},
+        {"id": "7.9", "task": "Create demo video", "done": false},
+        {"id": "7.10", "task": "Write README", "done": false}
+      ],
+      "validation": "App accessible on HuggingFace Spaces"
+    }
+  ],
+
+  "current_state": {
+    "active_phase": 1,
+    "last_completed_task": null,
+    "next_task": "1.1",
+    "blockers": [],
+    "session_notes": []
+  },
+
+  "key_formulas": {
+    "breeden_litzenberger": {
+      "latex": "f(K) = e^{rT} \\frac{\\partial^2 C}{\\partial K^2}",
+      "description": "Second derivative of call price gives risk-neutral PDF",
+      "implementation": "src/core/breeden_litz.py"
+    },
+    "sabr": {
+      "description": "Stochastic Alpha Beta Rho model for IV interpolation",
+      "implementation": "src/core/sabr.py"
+    }
+  },
+
+  "commands": {
+    "setup": [
+      "python -m venv venv",
+      "source venv/bin/activate",
+      "pip install -r requirements.txt",
+      "ollama pull qwen3:7b"
+    ],
+    "run": "streamlit run app/streamlit_app.py",
+    "test": "pytest tests/ -v",
+    "docker_build": "docker build -t pdf-visualizer .",
+    "docker_run": "docker run -p 8501:8501 pdf-visualizer"
+  },
+
+  "documentation_files": {
+    "claude_memory": ".claude/CLAUDE.md",
+    "system_index": ".claude/system_index.json",
+    "dev_status": ".claude/dev_status.json",
+    "navigation": "docs/NAVIGATION.md",
+    "resume_context": "docs/RESUME_CONTEXT.md",
+    "project_explanation": "docs/PROJECT_EXPLANATION.md",
+    "portfolio": "docs/PORTFOLIO.md"
+  }
+}

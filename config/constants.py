@@ -11,8 +11,9 @@ MAX_EXPIRY_DAYS = 90
 DEFAULT_EXPIRY_DAYS = 30
 
 # Strike filtering (percentage from spot)
-MIN_STRIKE_PCT = 0.80  # 80% of spot price
-MAX_STRIKE_PCT = 1.20  # 120% of spot price
+# Widened range for better coverage (especially for less liquid stocks)
+MIN_STRIKE_PCT = 0.70  # 70% of spot price
+MAX_STRIKE_PCT = 1.30  # 130% of spot price
 
 # PDF calculation
 MIN_STRIKES_FOR_PDF = 10  # Minimum number of strikes needed (reduced for broader stock coverage)
