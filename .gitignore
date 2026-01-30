@@ -84,3 +84,4 @@ frontend/build/
 # Data files
 data/
 history/
+frontend/public/*.m4a
