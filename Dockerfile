@@ -56,6 +56,9 @@ RUN touch .env
 # Copy built React frontend from stage 1
 COPY --from=frontend-builder /app/frontend/dist ./backend/static
 
+# Explicitly copy audio files from public to static (in case Vite doesn't copy large files)
+COPY --from=frontend-builder /app/frontend/public/*.m4a ./backend/static/ || true
+
 # Create necessary directories
 RUN mkdir -p data/cache data/chromadb data/raw
 
