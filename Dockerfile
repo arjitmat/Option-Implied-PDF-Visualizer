@@ -25,7 +25,8 @@ WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONPATH=/app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -44,7 +45,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 COPY config/ ./config/
 COPY backend/ ./backend/
+COPY app/ ./app/
 COPY .env.example .env
+
+# Ensure __init__.py files exist for Python modules
+RUN touch src/__init__.py src/data/__init__.py src/core/__init__.py \
+    src/ai/__init__.py src/visualization/__init__.py src/database/__init__.py \
+    config/__init__.py backend/__init__.py backend/api/__init__.py
 
 # Copy built React frontend from stage 1
 COPY --from=frontend-builder /app/frontend/dist ./backend/static
