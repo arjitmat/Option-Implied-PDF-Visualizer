@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  pdf-visualizer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pdf-visualizer
+    ports:
+      - "8501:8501"
+    environment:
+      - FRED_API_KEY=${FRED_API_KEY}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount data directory for persistence
+      - ./data:/app/data
+      # Mount source for development (optional - remove for production)
+      - ./app:/app/app
+      - ./src:/app/src
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Ollama service for AI interpretation
+  # Uncomment if you want AI features
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   restart: unless-stopped
+
+# volumes:
+#   ollama_data:
