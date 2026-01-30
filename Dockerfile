@@ -48,10 +48,7 @@ COPY backend/ ./backend/
 COPY app/ ./app/
 COPY .env.example .env
 
-# Ensure __init__.py files exist for Python modules
-RUN touch src/__init__.py src/data/__init__.py src/core/__init__.py \
-    src/ai/__init__.py src/visualization/__init__.py src/database/__init__.py \
-    config/__init__.py backend/__init__.py backend/api/__init__.py
+# Note: All __init__.py files are already in the source code
 
 # Copy built React frontend from stage 1
 COPY --from=frontend-builder /app/frontend/dist ./backend/static
