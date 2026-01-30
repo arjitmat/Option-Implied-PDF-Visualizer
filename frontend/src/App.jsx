@@ -974,35 +974,20 @@ export default function App() {
                 <GraduationCap className="text-accent-cyan" size={24} />
               </div>
               <div>
-                <h3 className="text-2xl font-bold mb-2">Educational Explainer Podcast</h3>
+                <h3 className="text-2xl font-bold mb-2">Visual Explainer</h3>
                 <p className="text-gray-400">
                   Learn the mathematics and practical applications of option-implied probability density functions.
                 </p>
               </div>
             </div>
 
-            {/* Podcast Player */}
-            <div className="bg-surface/50 rounded-xl p-6 border border-white/5">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-accent-green/10 flex items-center justify-center">
-                  <span className="text-accent-green font-bold">11m</span>
-                </div>
-                <div>
-                  <h4 className="font-bold text-lg">Educational Explainer</h4>
-                  <p className="text-sm text-gray-400">Essential concepts and practical applications in 11 minutes</p>
-                </div>
-              </div>
-              <audio
-                controls
-                className="w-full"
-                style={{
-                  filter: 'invert(1) hue-rotate(180deg)',
-                  height: '40px'
-                }}
-              >
-                <source src="/podcast-short.m4a" type="audio/mp4" />
-                Your browser does not support the audio element.
-              </audio>
+            {/* Infographic */}
+            <div className="bg-surface/50 rounded-xl overflow-hidden border border-white/5">
+              <img
+                src="/volatility-surface-infographic.png"
+                alt="3D Volatility Surface Explanation - From Market Data to Visual Insight"
+                className="w-full h-auto"
+              />
             </div>
           </div>
 
