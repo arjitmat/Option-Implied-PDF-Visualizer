@@ -63,10 +63,10 @@ Thumbs.db
 node_modules/
 package-lock.json
 
-# Audio files (podcasts for local testing)
-*.m4a
-*.mp3
-*.wav
+# Note: Audio files now tracked with Git LFS for deployment
+# *.m4a
+# *.mp3
+# *.wav
 
 # Local development files
 .claude/

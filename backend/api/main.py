@@ -211,6 +211,8 @@ async def analyze_options(request: AnalysisRequest):
         # Filter for calls
         calls = options_df[options_df['optionType'] == 'call'].copy()
 
+        print(f"After filtering for calls: {len(calls)} call options (was {len(options_df)} total)")
+
         if calls.empty:
             raise HTTPException(status_code=404, detail="No call options found")
 
