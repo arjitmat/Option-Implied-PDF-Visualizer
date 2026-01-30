@@ -1,3 +1,14 @@
+---
+title: Option-Implied PDF Visualizer
+emoji: 📊
+colorFrom: blue
+colorTo: purple
+sdk: streamlit
+sdk_version: "1.28.0"
+app_file: app/streamlit_app.py
+pinned: false
+---
+
 # Option-Implied PDF Visualizer
 
 An interactive tool that extracts and visualizes option-implied probability density functions for SPX/SPY, showing where the market expects prices to move, with AI-powered interpretation.
